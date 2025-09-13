@@ -471,7 +471,7 @@ const Main = () => {
       <header className="bg-gray-800 border-b border-gray-700 px-4 py-3">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold text-white">BLXKEX</h1>
+            <h1 className="text-2xl font-bold text-white">PBimage</h1>
             <div className="flex items-center bg-gray-700 rounded-lg p-1">
               <button
                 onClick={() => setShowPrivate(false)}
