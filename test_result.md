@@ -245,11 +245,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "User Authentication System"
-    - "Image Upload and Storage"
-    - "Private/Public Image Categorization"
-    - "Image Management (Get/Delete)"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
