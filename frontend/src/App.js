@@ -181,21 +181,17 @@ const LoginForm = ({ isLogin, toggleMode }) => {
 
 // Image Grid Component
 const ImageGrid = ({ images, onImageClick, showSpoilers }) => {
-  if (images.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-gray-500 text-lg">No images yet</div>
-        <div className="text-gray-600 text-sm mt-2">Upload your first image to get started</div>
-      </div>
-    );
-  }
+  // Create placeholder cards to fill the grid (minimum 4 cards)
+  const placeholderCount = Math.max(4 - images.length, 0);
+  const placeholders = Array(placeholderCount).fill(null);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+      {/* Actual Images */}
       {images.map((image) => (
         <div
           key={image.id}
-          className="relative aspect-square bg-gray-800 rounded-lg overflow-hidden cursor-pointer group"
+          className="relative aspect-[3/4] bg-gray-800 rounded-xl overflow-hidden cursor-pointer group hover:scale-105 transition-transform duration-300"
           onClick={() => onImageClick(image)}
         >
           <img
@@ -209,7 +205,7 @@ const ImageGrid = ({ images, onImageClick, showSpoilers }) => {
           {image.is_private && showSpoilers && (
             <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
               <div className="text-white text-center">
-                <div className="text-2xl mb-2">👁️</div>
+                <div className="text-3xl mb-2">👁️</div>
                 <div className="text-sm font-medium">Click to reveal</div>
               </div>
             </div>
@@ -221,9 +217,19 @@ const ImageGrid = ({ images, onImageClick, showSpoilers }) => {
             </div>
           )}
           
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className={`w-3 h-3 rounded-full ${image.is_private ? 'bg-red-500' : 'bg-green-500'}`}></div>
           </div>
+        </div>
+      ))}
+      
+      {/* Placeholder Cards */}
+      {placeholders.map((_, index) => (
+        <div
+          key={`placeholder-${index}`}
+          className="aspect-[3/4] bg-gray-800 rounded-xl border-2 border-dashed border-gray-700 flex items-center justify-center opacity-50"
+        >
+          <div className="text-gray-600 text-4xl">📷</div>
         </div>
       ))}
     </div>
