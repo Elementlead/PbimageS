@@ -107,7 +107,7 @@ const LoginForm = ({ isLogin, toggleMode }) => {
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-4xl font-bold text-white mb-2">BLXKEX</h2>
+          <h2 className="text-4xl font-bold text-white mb-2">PBimage</h2>
           <h3 className="text-xl text-gray-300">
             {isLogin ? 'Sign in to your account' : 'Create your account'}
           </h3>
