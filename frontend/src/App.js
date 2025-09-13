@@ -432,6 +432,7 @@ const Main = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSpoilers, setShowSpoilers] = useState(true);
+  const [caption, setCaption] = useState('');
 
   useEffect(() => {
     loadImages();
@@ -453,6 +454,7 @@ const Main = () => {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     loadImages();
+    setCaption(''); // Clear caption after upload
   };
 
   const handleDelete = async (imageId) => {
@@ -465,71 +467,123 @@ const Main = () => {
     }
   };
 
+  const handleQuickUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('caption', caption);
+        formData.append('is_private', showPrivate);
+        
+        try {
+          await handleUpload(formData);
+        } catch (error) {
+          console.error('Upload failed:', error);
+        }
+      }
+    };
+    input.click();
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 px-4 py-3">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
+    <div className="min-h-screen bg-black relative">
+      {/* Brand Name - Top Right */}
+      <div className="absolute top-6 right-6 z-10">
+        <h1 className="text-white text-2xl font-bold tracking-wider">PBimage</h1>
+      </div>
+
+      {/* Logout Button - Top Left */}
+      <div className="absolute top-6 left-6 z-10">
+        <button
+          onClick={logout}
+          className="text-gray-400 hover:text-white text-sm"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Toggle Switch - Center Top */}
+      <div className="flex justify-center pt-16 pb-8">
+        <div className="flex items-center bg-gray-800 rounded-full p-1 w-48">
+          <button
+            onClick={() => setShowPrivate(false)}
+            className={`flex-1 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
+              !showPrivate 
+                ? 'bg-white text-black' 
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <span>👁️</span>
+            <span>Public</span>
+          </button>
+          <button
+            onClick={() => setShowPrivate(true)}
+            className={`flex-1 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
+              showPrivate 
+                ? 'bg-white text-black' 
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <span>🔒</span>
+            <span>Private</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <main className="px-8 pb-32">
+        <div className="max-w-6xl mx-auto">
+          <ImageGrid 
+            images={images} 
+            onImageClick={setSelectedImage}
+            showSpoilers={showSpoilers && showPrivate}
+          />
+        </div>
+      </main>
+
+      {/* Bottom Section - Caption Input and Upload Button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-gray-800">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold text-white">PBimage</h1>
-            <div className="flex items-center bg-gray-700 rounded-lg p-1">
-              <button
-                onClick={() => setShowPrivate(false)}
-                className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                  !showPrivate ? 'bg-green-600 text-white' : 'text-gray-300 hover:text-white'
-                }`}
-              >
-                👁️ Public
-              </button>
-              <button
-                onClick={() => setShowPrivate(true)}
-                className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                  showPrivate ? 'bg-green-600 text-white' : 'text-gray-300 hover:text-white'
-                }`}
-              >
-                🔒 Private
-              </button>
+            {/* Caption Input */}
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="ADD A CAPTION"
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500 text-sm tracking-wide"
+              />
             </div>
+            
+            {/* Upload Button */}
+            <button
+              onClick={handleQuickUpload}
+              className="w-14 h-14 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center transition-colors shadow-lg"
+            >
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </button>
           </div>
           
-          <div className="flex items-center space-x-4">
-            {showPrivate && (
+          {/* Show spoilers toggle for private mode */}
+          {showPrivate && (
+            <div className="mt-4 flex justify-center">
               <button
                 onClick={() => setShowSpoilers(!showSpoilers)}
-                className={`px-3 py-1 rounded text-sm transition-colors ${
-                  showSpoilers ? 'bg-gray-700 text-gray-300' : 'bg-green-600 text-white'
-                }`}
+                className="text-gray-400 hover:text-white text-xs"
               >
                 {showSpoilers ? '🔒 Hide Spoilers' : '👁️ Show All'}
               </button>
-            )}
-            <span className="text-gray-300">Welcome, {user?.username}</span>
-            <button
-              onClick={logout}
-              className="text-gray-400 hover:text-white"
-            >
-              Logout
-            </button>
-          </div>
+            </div>
+          )}
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-6">
-        <ImageGrid 
-          images={images} 
-          onImageClick={setSelectedImage}
-          showSpoilers={showSpoilers && showPrivate}
-        />
-      </main>
-
-      {/* Upload Button */}
-      <button
-        onClick={() => setShowUploadModal(true)}
-        className="fixed bottom-6 right-6 w-16 h-16 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg transition-colors flex items-center justify-center text-2xl"
-      >
-        📷
-      </button>
+      </div>
 
       {/* Modals */}
       <UploadModal
